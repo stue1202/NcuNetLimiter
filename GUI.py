@@ -5,9 +5,6 @@ import webbrowser
 import re
 import AutoStart
 import os,sys
-#import icon,base64
-#from icon import img
-#import XX
 
 def get_executable_directory():
     if getattr(sys, 'frozen', False):
@@ -28,7 +25,6 @@ def StopScanning():
     StopScanButton['state']=tk.DISABLED
     ScanButton['state']=tk.ACTIVE
 def CheckState():
-    Log.insert('1.0')
     if not re.match(r'\d+',TrafficMaxValue.get().strip()) :
         messagebox.showerror("錯誤","請輸入數字")
     elif not re.match(r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$',YourIp.get().strip()):
