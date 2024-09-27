@@ -5,7 +5,7 @@ import webbrowser
 import re
 import AutoStart
 import os,sys
-import Iconify,Info,Notify
+import Iconify,Info
 
 Scanning=False
 
@@ -42,7 +42,7 @@ def StartScanning():
         Scanning=True
         if MinimizeWhenScanning.get():
             Iconify.minimize_to_tray(window,SaveQuit)
-            Notify.notify("NcuNetLimiter","正在背景掃描")
+            #Notify.notify("NcuNetLimiter","正在背景掃描")
         UpdateConfig()
         YourIp['state']=tk.DISABLED
         TrafficMaxValue['state']=tk.DISABLED

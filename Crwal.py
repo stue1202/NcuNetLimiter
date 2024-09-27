@@ -9,11 +9,13 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 from tkinter import messagebox
-import Notify
+import Info
 import tkinter as TK
 # 全局變數
 YourIP = ''
 stop_scanning = False
+def GetLastDetectedTraffic():
+    return Traffic
 def GetTime():
     formatted_time = time.strftime("%H:%M:%S", time.localtime())
     return formatted_time
@@ -40,41 +42,40 @@ def GetTraffic():
     return Traffic
 
 def RunCrawl():
+    global driver
+    chrome_options = Options()
+    chrome_options.add_argument("--headless=old")
+    chrome_options.add_argument("--disable-gpu")
+    driver = webdriver.Chrome(options=chrome_options)
     try:
         # 等待 IP 输入框元素加载完成
+        global Traffic
         Traffic=GetTraffic()
-        print("T",Traffic)
         Ins(End, f'上傳流量共%sGB   %s\n'%(Traffic,GetTime()))
         if float(Traffic)>=float(Max):
             #if window !="normal":
             #    Notify.notify(f"超出設定上傳流量%s"%Max, f'上傳流量共%sGB   %s'%(Traffic,GetTime()))
             #else:
             messagebox.showerror(f"超出設定上傳流量%sGB"%Max, f'上傳流量共%sGB   %s'%(Traffic,GetTime()))
+            Traffic=Traffic+'GB'
+        driver.quit()
     except Exception as e:
-        #if window !="normal":
-        #    Notify.notify("警告", str(e))
-        #else:
         messagebox.showerror("警告", str(e))
         StopScanning()
         
-def intt():
-    global driver
-    chrome_options = Options()
-    chrome_options.add_argument("--headless=old")
-    chrome_options.add_argument("--disable-gpu")
-    driver = webdriver.Chrome(options=chrome_options)
-    
-    
-scheduler = schedule.Scheduler()
-scheduler.every(10).minutes.do(RunCrawl)
 
+scheduler = schedule.Scheduler()
+scheduler.every(0.5).minutes.do(RunCrawl)
 def run_scheduler():
+
+    RunCrawl()
     while not stop_scanning:
         scheduler.run_pending()
         time.sleep(1)  # 避免占用过多 CPU
 
 def StartDetect(TextBoxInsert, TextBoxEnd, MyIp, MaxTrafficValue,WindowState):
-    global thread, YourIP, Ins, End, Max,stop_scanning,window,driver
+    global thread, YourIP, Ins, End, Max,stop_scanning,window,driver,Traffic
+    Traffic='尚未開始偵測'
     Ins = TextBoxInsert
     End = TextBoxEnd
     Max = MaxTrafficValue
@@ -82,16 +83,14 @@ def StartDetect(TextBoxInsert, TextBoxEnd, MyIp, MaxTrafficValue,WindowState):
     window=WindowState
     Ins(End, "開始偵測 " + YourIP + "\n")
     stop_scanning = False  # 重置停止標誌
-    intt()
-    RunCrawl()
     thread = threading.Thread(target=run_scheduler, daemon=True)
     thread.start()
 
 def StopScanning():
     global stop_scanning
     stop_scanning = True  # 設置停止標誌
-    driver.quit()
-    thread.join()  # 等待線程結束
+    if thread.is_alive():
+        thread.join()  # 等待線程結束
     Ins(End, "停止偵測\n")  # 顯示停止訊息
 
     

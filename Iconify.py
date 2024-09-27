@@ -3,8 +3,7 @@ from pystray import Icon, MenuItem, Menu
 from PIL import Image, ImageDraw
 import threading
 import sys
-import Notify
-import Info
+import Info,Crwal
 
 # 显示窗口
 def show_window():
@@ -26,7 +25,7 @@ def minimize_to_tray(window,SaveQuit):
 # 显示托盘图标
 def show_tray_icon():
     global win,ico
-    icon = Icon("test_icon", Image.open(Info.GetIconpath()), "NcuNetLimiter",menu=Menu(
+    icon = Icon("test_icon", Image.open(Info.GetIconpath()), f"當前上傳量:%s"%Crwal.GetLastDetectedTraffic(),menu=Menu(
     MenuItem(text="show window",action=show_window,default=True)
 ))
     ico=icon
