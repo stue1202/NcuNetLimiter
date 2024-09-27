@@ -62,16 +62,14 @@ def RunCrawl():
     except Exception as e:
         messagebox.showerror("警告", str(e))
         StopScanning()
-        
 
-scheduler = schedule.Scheduler()
-scheduler.every(0.5).minutes.do(RunCrawl)
 def run_scheduler():
-
+    scheduler = schedule.Scheduler()
+    scheduler.every(10).minutes.do(RunCrawl)
     RunCrawl()
     while not stop_scanning:
         scheduler.run_pending()
-        time.sleep(1)  # 避免占用过多 CPU
+        time.sleep(30)  # 避免占用过多 CPU
 
 def StartDetect(TextBoxInsert, TextBoxEnd, MyIp, MaxTrafficValue,WindowState):
     global thread, YourIP, Ins, End, Max,stop_scanning,window,driver,Traffic
@@ -89,8 +87,7 @@ def StartDetect(TextBoxInsert, TextBoxEnd, MyIp, MaxTrafficValue,WindowState):
 def StopScanning():
     global stop_scanning
     stop_scanning = True  # 設置停止標誌
-    if thread.is_alive():
-        thread.join()  # 等待線程結束
+    thread.join()  # 等待線程結束
     Ins(End, "停止偵測\n")  # 顯示停止訊息
 
     
